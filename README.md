@@ -31,6 +31,9 @@ vk.com
 ```
 devman.org; http://github.com | vk.com
 ```
+
+---
+
 ###Example:
 
 **urls.txt** data:
