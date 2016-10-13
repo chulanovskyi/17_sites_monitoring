@@ -14,25 +14,35 @@ and its prepaid domain name expiration date more than 1 month.
 Script takes one required argument:
 - `path` - path to text file with domain names;
 
-```**Note!** In text file domain names should be separated with spaces or new lines.```
-* *Good structure:* * devman.org github.com vk.com
-* *Good structure:* *
+```
+**Note!** In text file domain names should be separated with spaces or new lines.
+```
+*Good structure:* 
+```
+devman.org github.com vk.com
+```
+*Good structure:*
+```
 devman.org
 github.com
 vk.com
-**_Not valid structure_**: devman.org; http://github.com | vk.com
-
+```
+**_Not valid structure:_**
+```
+devman.org; http://github.com | vk.com
+```
 ###Example:
 
 **urls.txt** data:
+```
 devman.org
 github.com
 vk.com
-
-##INPUT
+```
+####INPUT
 `python check_site_health.py urls.txt`
 
-##OUPUT
+####OUPUT
 ```
 --------------------
 devman.org
