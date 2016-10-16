@@ -15,7 +15,7 @@ Script takes one required argument:
 - `path` - path to text file with domain names;
 
 ```
-**Note!** In text file domain names should be separated with spaces or new lines.
+**Note!** Domain names in domain list file should be separated with spaces or new lines.
 ```
 *Good structure:* 
 ```
@@ -41,22 +41,26 @@ devman.org; http://github.com | vk.com
 devman.org
 github.com
 vk.com
+someothersite.com
+facebook.con
 ```
 ####INPUT
 `python check_site_health.py urls.txt`
 
 ####OUPUT
+- If all domains in file are alive and won't expire soon then you should see:
+`Domain list is OK`
+- If some domains are don't fit the conditions above then their status will be saved
+in file called 'unsafe_domains.txt'.
+
+**unsafe_domains.txt** data:
 ```
 --------------------
-devman.org
-Is alive: True
-Expire soon: False
+someothersite.com
+Is alive: False
+Expire soon: None
 --------------------
-github.com
-Is alive: True
-Expire soon: False
---------------------
-vk.com
-Is alive: True
-Expire soon: False
+facebook.con
+Is alive: False
+Expire soon: None
 ```

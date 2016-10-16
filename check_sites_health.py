@@ -1,7 +1,9 @@
 import requests
 import argparse
 import datetime
-from whois import whois
+import whois
+import os
+from contextlib import redirect_stdout
 
 
 EXPIRE_SOON_DAYS = 30
@@ -19,12 +21,18 @@ def load_urls4check(path):
 
 
 def is_server_respond_with_200(url):
-    response = requests.get('http://%s' % url)
+    try:
+        response = requests.get('http://%s' % url)
+    except requests.ConnectionError:
+        return False
     return response.status_code == 200
 
 
 def is_domain_expire_soon(domain_name):
-    domain_info = whois(domain_name)
+    try:
+        domain_info = whois.whois(domain_name)
+    except whois.parser.PywhoisError:
+        return
     try:
         relative, precise = domain_info.expiration_date
         expire_date = relative
@@ -37,12 +45,28 @@ def is_domain_expire_soon(domain_name):
     return expire_delta >= expire_date.date()
 
 
+def print_result():
+    if not os.stat('unsafe_domains.txt').st_size:
+        print('Domain list is unsafe, check details')
+        return
+    print('Domain list is OK')
+
 if __name__ == '__main__':
-    parser = create_parser()
-    path = parser.parse_args().path
-    urls = load_urls4check(path)
-    for url in urls.split():
-        print('-'*20)
-        print(url)
-        print('Is alive: %s' % is_server_respond_with_200(url))
-        print('Expire soon: %s' % is_domain_expire_soon(url))
+    arg_parser = create_parser()
+    urls_path = arg_parser.parse_args().path
+    urls = load_urls4check(urls_path)
+    unsafe_domain_file = None
+    for domain in urls.split():
+        alive = is_server_respond_with_200(domain)
+        expire_soon = is_domain_expire_soon(domain)
+        if alive and not expire_soon:
+            continue
+        else:
+            if not unsafe_domain_file:
+                unsafe_domain_file = open('unsafe_domains.txt', 'w+')
+            with redirect_stdout(unsafe_domain_file):
+                print('-' * 20)
+                print(domain)
+                print('Is alive: %s' % alive)
+                print('Expire soon: %s' % expire_soon)
+    print_result()
