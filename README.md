@@ -14,9 +14,8 @@ and its prepaid domain name expiration date more than 1 month.
 Script takes one required argument:
 - `path` - path to text file with domain names;
 
-```
 **Note!** Domain names in domain list file should be separated with spaces or new lines.
-```
+
 *Good structure:* 
 ```
 devman.org github.com vk.com
