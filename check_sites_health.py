@@ -1,9 +1,9 @@
-import requests
-import argparse
-import datetime
-import whois
 import os
-from contextlib import redirect_stdout
+import datetime
+import argparse
+
+import requests
+import whois
 
 
 EXPIRE_SOON_DAYS = 30
@@ -16,7 +16,7 @@ def create_parser():
 
 
 def load_urls4check(path):
-    with open(path, encoding='utf-8') as url_file:
+    with open(path) as url_file:
         return url_file.read()
 
 
@@ -46,27 +46,31 @@ def is_domain_expire_soon(domain_name):
 
 
 def print_result():
-    if not os.stat('unsafe_domains.txt').st_size:
+    try:
+        os.stat('unsafe_domains.txt')
         print('Domain list is unsafe, check details')
-        return
-    print('Domain list is OK')
+    except FileNotFoundError:
+        print('Domain list is OK')
+
 
 if __name__ == '__main__':
     arg_parser = create_parser()
     urls_path = arg_parser.parse_args().path
     urls = load_urls4check(urls_path)
-    unsafe_domain_file = None
+    unsafe_file_created = False
     for domain in urls.split():
         alive = is_server_respond_with_200(domain)
         expire_soon = is_domain_expire_soon(domain)
         if alive and not expire_soon:
             continue
         else:
-            if not unsafe_domain_file:
-                unsafe_domain_file = open('unsafe_domains.txt', 'w+')
-            with redirect_stdout(unsafe_domain_file):
-                print('-' * 20)
-                print(domain)
-                print('Is alive: %s' % alive)
-                print('Expire soon: %s' % expire_soon)
+            if not unsafe_file_created:
+                with open('unsafe_domains.txt', 'w') as unsafe:
+                    unsafe_file_created = True
+            with open('unsafe_domains.txt', 'a') as unsafe:
+                unsafe.write('-' * 20)
+                unsafe.write('\n')
+                unsafe.write('%s\n' % domain)
+                unsafe.write('Is alive: %s\n' % alive)
+                unsafe.write('Expire soon: %s\n' % expire_soon)
     print_result()
