@@ -63,28 +63,3 @@ facebook.con
 Is alive: False
 Expire soon: None
 ```
-
-
-Что не так
-
-> unsafe_domain_file = open('unsafe_domains.txt', 'w+')
-> направление мысли правильное, реализация плохая. Перенаправление stdout и stderr - это прерогатива вызывающей программы. Не надо делать это за нее.
-смотрю решил идти другим путем ... Ну ок
-
-def print_result():
-try:
-os.stat('unsafe_domains.txt')
-print('Domain list is unsafe, check details')
-except FileNotFoundError:
-print('Domain list is OK')
-вот это просто звиздец...
-
-for domain in urls.split():
-if not unsafe_file_created:
-with open('unsafe_domains.txt', 'w') as unsafe:
-unsafe_file_created = True
-with open('unsafe_domains.txt', 'a') as unsafe:
-# ....
-а вот это вообще за гранью
-
-свяжись со мной в slack @pelid
