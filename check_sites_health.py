@@ -45,32 +45,33 @@ def is_domain_expire_soon(domain_name):
     return expire_delta >= expire_date.date()
 
 
-def print_result():
-    try:
-        os.stat('unsafe_domains.txt')
-        print('Domain list is unsafe, check details')
-    except FileNotFoundError:
-        print('Domain list is OK')
+def create_unsafe_file(urls):
+   	with open('unsafe_domains.txt', 'w') as unsafe:
+   		for domain in urls:
+   			unsafe.write('-' * 20)
+            #unsafe.write('\n')
+            unsafe.write('%s' % domain['name'])
+            unsafe.write('Is alive: %s' % domain['alive'])
+            unsafe.write('Expire soon: %s' % domain['expire'])
 
 
 if __name__ == '__main__':
     arg_parser = create_parser()
     urls_path = arg_parser.parse_args().path
     urls = load_urls4check(urls_path)
-    unsafe_file_created = False
+    unsafe_urls = dict()
     for domain in urls.split():
         alive = is_server_respond_with_200(domain)
         expire_soon = is_domain_expire_soon(domain)
         if alive and not expire_soon:
             continue
         else:
-            if not unsafe_file_created:
-                with open('unsafe_domains.txt', 'w') as unsafe:
-                    unsafe_file_created = True
-            with open('unsafe_domains.txt', 'a') as unsafe:
-                unsafe.write('-' * 20)
-                unsafe.write('\n')
-                unsafe.write('%s\n' % domain)
-                unsafe.write('Is alive: %s\n' % alive)
-                unsafe.write('Expire soon: %s\n' % expire_soon)
-    print_result()
+        	unsafe_urls.append({
+        		'name': domain,
+        		'alive': alive,
+        		'expire': expire_soon})
+    if unsafe_urls:
+    	create_unsafe_file(unsafe_urls)
+    	print('Domain list is unsafe, check details')
+    else:
+    	print('Domain list is OK')
