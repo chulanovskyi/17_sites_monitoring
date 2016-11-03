@@ -54,12 +54,5 @@ in file called 'unsafe_domains.txt'.
 
 **unsafe_domains.txt** data:
 ```
---------------------
-someothersite.com
-Is alive: False
-Expire soon: None
---------------------
-facebook.con
-Is alive: False
-Expire soon: None
+[{"expire": null, "alive": false, "name": "facebook.con"}]
 ```

@@ -1,6 +1,7 @@
 import os
 import datetime
 import argparse
+import json
 
 import requests
 import whois
@@ -46,20 +47,15 @@ def is_domain_expire_soon(domain_name):
 
 
 def create_unsafe_file(urls):
-   	with open('unsafe_domains.txt', 'w') as unsafe:
-   		for domain in urls:
-   			unsafe.write('-' * 20)
-            #unsafe.write('\n')
-            unsafe.write('%s' % domain['name'])
-            unsafe.write('Is alive: %s' % domain['alive'])
-            unsafe.write('Expire soon: %s' % domain['expire'])
+	with open('unsafe_domains.txt', 'w') as unsafe:
+		unsafe.write(json.dumps(urls))
 
 
 if __name__ == '__main__':
     arg_parser = create_parser()
     urls_path = arg_parser.parse_args().path
     urls = load_urls4check(urls_path)
-    unsafe_urls = dict()
+    unsafe_urls = list()
     for domain in urls.split():
         alive = is_server_respond_with_200(domain)
         expire_soon = is_domain_expire_soon(domain)
